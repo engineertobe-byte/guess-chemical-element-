@@ -1,0 +1,94 @@
+#include <stdio.h>
+
+int main() {
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <time.h>
+
+typedef struct {
+    char name[20];
+    char symbol[3];
+    int atomicNumber;
+    char family[20];
+    char state[20];
+    double atomicMass;
+} Element;
+
+void toLowerStr(char *str) {
+    for (int i = 0; str[i]; i++) str[i] = tolower(str[i]);
+}
+
+void giveHint(Element e, int wrongGuessCount) {
+    switch(wrongGuessCount) {
+        case 1: printf("Hint 1 - Atomic Number: %d\n", e.atomicNumber); break;
+        case 2: printf("Hint 2 - Chemical Symbol: %s\n", e.symbol); break;
+        case 3: printf("Hint 3 - Chemical Family: %s\n", e.family); break;
+        case 4: printf("Hint 4 - State at room temperature: %s\n", e.state); break;
+        case 5: printf("Hint 5 - Atomic Mass: %.2f\n", e.atomicMass); break;
+        default: printf("No more hints available!\n");
+    }
+}
+
+int main() {
+    Element elements[] = {
+        {"Hydrogen", "H", 1, "Non-metal", "Gas", 1.008},
+        {"Helium", "He", 2, "Noble Gas", "Gas", 4.0026},
+        {"Carbon", "C", 6, "Non-metal", "Solid", 12.011},
+        {"Nitrogen", "N", 7, "Non-metal", "Gas", 14.007},
+        {"Oxygen", "O", 8, "Non-metal", "Gas", 15.999},
+        {"Sodium", "Na", 11, "Alkali Metal", "Solid", 22.990},
+        {"Magnesium", "Mg", 12, "Alkaline Earth Metal", "Solid", 24.305},
+        {"Chlorine", "Cl", 17, "Halogen", "Gas", 35.45},
+        {"Iron", "Fe", 26, "Transition Metal", "Solid", 55.845},
+        {"Argon", "Ar", 18, "Noble Gas", "Gas", 39.948}
+    };
+    int size = sizeof(elements) / sizeof(Element);
+
+    srand(time(NULL));
+    int choice = rand() % size;
+
+    char guess[20];
+    int attempts = 0;
+    const int maxAttempts = 7;
+
+    printf("Welcome to 'Guess the Chemical Element'!\n");
+    printf("You have %d attempts to guess the element.\n", maxAttempts);
+    printf("Type 'hint' to receive a hint (counts as an attempt).\n");
+
+    while (attempts < maxAttempts) {
+        printf("\nAttempt #%d - Your guess: ", attempts + 1);
+        scanf("%19s", guess);
+        toLowerStr(guess);
+
+        if(strcmp(guess, "hint") == 0) {
+            attempts++;
+            giveHint(elements[choice], attempts);
+            continue;
+        }
+
+        char elementNameLower[20];
+        strcpy(elementNameLower, elements[choice].name);
+        toLowerStr(elementNameLower);
+
+        if(strcmp(guess, elementNameLower) == 0) {
+            printf("Congrats! You guessed '%s' in %d attempts.\n", elements[choice].name, attempts + 1);
+            break;
+        } else {
+            printf("Incorrect, try again.");
+            attempts++;
+            if (attempts <= maxAttempts) {
+                giveHint(elements[choice], attempts);
+            }
+        }
+    }
+
+    if (attempts == maxAttempts) {
+        printf("\nGame over! The element was: %s.\n", elements[choice].name);
+    }
+
+    return 0;
+}
+    return 0;
+}
